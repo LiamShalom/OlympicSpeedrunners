@@ -110,8 +110,8 @@ public class PlayerController : MonoBehaviour
 
     private bool isWallTouch()
     {
-        Vector2 leftWallCheck = wallCheck.position + Vector3.left * 0.38f;
-        Vector2 rightWallCheck = wallCheck.position + Vector3.right * 0.38f;
+        Vector2 leftWallCheck = wallCheck.position + Vector3.left * 0.1f;
+        Vector2 rightWallCheck = wallCheck.position + Vector3.right * 0.1f;
 
         bool isTouchingLeftWall = Physics2D.OverlapCapsule(leftWallCheck, new Vector2(0.2f, Math.Abs(groundCheck.position.y) * 2) * gameObject.transform.localScale, CapsuleDirection2D.Vertical, 0, wallLayer);
         bool isTouchingRightWall = Physics2D.OverlapCapsule(rightWallCheck, new Vector2(0.2f, Math.Abs(groundCheck.position.y) * 2) * gameObject.transform.localScale, CapsuleDirection2D.Vertical, 0, wallLayer);
