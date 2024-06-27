@@ -4,10 +4,13 @@ using UnityEngine;
 using System;
 using UnityEditor.Tilemaps;
 using TMPro;
+using Unity.VisualScripting;
 
 public class PlayerController : MonoBehaviour
 {
     public Rigidbody2D rb;
+    public BoxCollider2D standingCollider;
+    public BoxCollider2D slidingCollider;
     private float horizontal;
     public float moveSpeed = 5;
     public float maxMovementSpeed = 5;
@@ -33,7 +36,7 @@ public class PlayerController : MonoBehaviour
     public Vector2 wallJumpingPower = new Vector2(2f, 4f);
 
     public Sprite slideSprite;
-    private Vector2 startScale;
+    public Sprite standingSprite;
     public float slideSlowdown;
     private bool isSliding;
 
@@ -41,8 +44,9 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        startScale = gameObject.transform.localScale;
         rb = GetComponent<Rigidbody2D>();
+        standingCollider = gameObject.GetComponent<BoxCollider2D>();
+        slidingCollider = gameObject.GetComponent<BoxCollider2D>();
     }
 
     // Update is called once per frame
@@ -63,9 +67,7 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            //gameObject.GetComponent<SpriteRenderer>().sprite = slideSprite;
-            gameObject.transform.localScale = new Vector2(startScale.y, startScale.x);
-            gameObject.transform.position = new Vector2(transform.position.x, transform.position.y - startScale.y * 2);
+            gameObject.GetComponent<SpriteRenderer>().sprite = slideSprite;
             if (!isFacingRight)
             {
                 Vector3 localScale = transform.localScale;
@@ -78,9 +80,7 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.DownArrow))
         {
-            //gameObject.GetComponent<SpriteRenderer>().sprite = slideSprite;
-            gameObject.transform.localScale = startScale;
-            gameObject.transform.position = new Vector2(transform.position.x, transform.position.y + startScale.y * 2);
+            gameObject.GetComponent<SpriteRenderer>().sprite = standingSprite;
             if (!isFacingRight)
             {
                 Vector3 localScale = transform.localScale;
@@ -111,12 +111,12 @@ public class PlayerController : MonoBehaviour
 
     private bool isGrounded()
     {
-        return Physics2D.OverlapCapsule(groundCheck.position, new Vector2(7f * transform.localScale.x, 1.5f * transform.localScale.y), CapsuleDirection2D.Horizontal, 0, groundLayer);
+        return Physics2D.OverlapCapsule(groundCheck.position, new Vector2(wallCheck.position.x * 2, 0.1f), CapsuleDirection2D.Horizontal, 0, groundLayer);
     }
 
     private bool isWallTouch()
     {
-        return Physics2D.OverlapCapsule(wallCheck.position, new Vector2(1.5f * transform.localScale.x, 7f * transform.localScale.y), CapsuleDirection2D.Vertical, 0, wallLayer);
+        return Physics2D.OverlapCapsule(wallCheck.position, new Vector2(0.1f, groundCheck.position.y * -2), CapsuleDirection2D.Vertical, 0, wallLayer);
     }
 
     private void WallSlide()
