@@ -45,8 +45,6 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        standingCollider = gameObject.GetComponent<BoxCollider2D>();
-        slidingCollider = gameObject.GetComponent<BoxCollider2D>();
     }
 
     // Update is called once per frame
@@ -67,6 +65,9 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
+            standingCollider.enabled = false;
+            slidingCollider.enabled = true;
+            gameObject.transform.position = new Vector2(transform.position.x, transform.position.y - (float)(slidingCollider.size.y / 2));
             gameObject.GetComponent<SpriteRenderer>().sprite = slideSprite;
             if (!isFacingRight)
             {
@@ -80,6 +81,9 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.DownArrow))
         {
+            slidingCollider.enabled = false;
+            standingCollider.enabled = true;
+            gameObject.transform.position = new Vector2(transform.position.x, transform.position.y + (float)(slidingCollider.size.y / 2));
             gameObject.GetComponent<SpriteRenderer>().sprite = standingSprite;
             if (!isFacingRight)
             {
