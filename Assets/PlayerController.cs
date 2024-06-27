@@ -65,10 +65,10 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
+            gameObject.GetComponent<SpriteRenderer>().sprite = slideSprite;
             standingCollider.enabled = false;
             slidingCollider.enabled = true;
             gameObject.transform.position = new Vector2(transform.position.x, transform.position.y - (float)(slidingCollider.size.y / 2));
-            gameObject.GetComponent<SpriteRenderer>().sprite = slideSprite;
             Flip();
             if (isGrounded()) rb.velocity = new Vector2(rb.velocity.x * slideSlowdown, rb.velocity.y);
             isSliding = true;
@@ -76,10 +76,10 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.DownArrow))
         {
+            gameObject.GetComponent<SpriteRenderer>().sprite = standingSprite;
             slidingCollider.enabled = false;
             standingCollider.enabled = true;
             gameObject.transform.position = new Vector2(transform.position.x, transform.position.y + (float)(slidingCollider.size.y / 2));
-            gameObject.GetComponent<SpriteRenderer>().sprite = standingSprite;
             Flip();
             isSliding = false;
         }
@@ -105,12 +105,18 @@ public class PlayerController : MonoBehaviour
 
     private bool isGrounded()
     {
-        return Physics2D.OverlapCapsule(groundCheck.position, new Vector2(wallCheck.position.x * 2, 0.1f) * gameObject.transform.localScale, CapsuleDirection2D.Horizontal, 0, groundLayer);
+        return Physics2D.OverlapCapsule(groundCheck.position, new Vector2(wallCheck.position.x * 2, 0.2f) * gameObject.transform.localScale, CapsuleDirection2D.Horizontal, 0, groundLayer);
     }
 
     private bool isWallTouch()
     {
-        return Physics2D.OverlapCapsule(wallCheck.position, new Vector2(0.1f, groundCheck.position.y * -2) * gameObject.transform.localScale, CapsuleDirection2D.Vertical, 0, wallLayer);
+        Vector2 leftWallCheck = wallCheck.position + Vector3.left * 0.38f;
+        Vector2 rightWallCheck = wallCheck.position + Vector3.right * 0.38f;
+
+        bool isTouchingLeftWall = Physics2D.OverlapCapsule(leftWallCheck, new Vector2(0.2f, Math.Abs(groundCheck.position.y) * 2) * gameObject.transform.localScale, CapsuleDirection2D.Vertical, 0, wallLayer);
+        bool isTouchingRightWall = Physics2D.OverlapCapsule(rightWallCheck, new Vector2(0.2f, Math.Abs(groundCheck.position.y) * 2) * gameObject.transform.localScale, CapsuleDirection2D.Vertical, 0, wallLayer);
+
+        return isTouchingLeftWall || isTouchingRightWall;
     }
 
     private void WallSlide()
