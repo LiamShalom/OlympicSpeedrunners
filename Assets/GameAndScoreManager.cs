@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class GameAndScoreManager : MonoBehaviour
 {
-    public List<playerController> AlivePlayers;
+    //public List<playerController> AlivePlayers;
     public int NumberOfWins = 0;
     public int AmountOfBoost = 0;
     public bool IsOutOfBounds = false;
     public TextMesh Endscreen;
-    public TextMesh 
+    //public TextMesh 
    
 
 
@@ -24,11 +24,11 @@ public class GameAndScoreManager : MonoBehaviour
     void Update()
     {
         
-        if(NumberOfWins == 3)
+       // if(NumberOfWins == 3)
             
 
 
-        if()
+        //if()
 
 
     }
