@@ -69,13 +69,8 @@ public class PlayerController : MonoBehaviour
             slidingCollider.enabled = true;
             gameObject.transform.position = new Vector2(transform.position.x, transform.position.y - (float)(slidingCollider.size.y / 2));
             gameObject.GetComponent<SpriteRenderer>().sprite = slideSprite;
-            if (!isFacingRight)
-            {
-                Vector3 localScale = transform.localScale;
-                localScale.x *= -1f;
-                transform.localScale = localScale;
-            }
-            if(isGrounded()) rb.velocity = new Vector2(rb.velocity.x * slideSlowdown, rb.velocity.y);
+            Flip();
+            if (isGrounded()) rb.velocity = new Vector2(rb.velocity.x * slideSlowdown, rb.velocity.y);
             isSliding = true;
         }
 
@@ -85,12 +80,7 @@ public class PlayerController : MonoBehaviour
             standingCollider.enabled = true;
             gameObject.transform.position = new Vector2(transform.position.x, transform.position.y + (float)(slidingCollider.size.y / 2));
             gameObject.GetComponent<SpriteRenderer>().sprite = standingSprite;
-            if (!isFacingRight)
-            {
-                Vector3 localScale = transform.localScale;
-                localScale.x *= -1f;
-                transform.localScale = localScale;
-            }
+            Flip();
             isSliding = false;
         }
 
