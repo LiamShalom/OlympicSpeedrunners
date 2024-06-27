@@ -111,12 +111,12 @@ public class PlayerController : MonoBehaviour
 
     private bool isGrounded()
     {
-        return Physics2D.OverlapCapsule(groundCheck.position, new Vector2(wallCheck.position.x * 2, 0.1f), CapsuleDirection2D.Horizontal, 0, groundLayer);
+        return Physics2D.OverlapCapsule(groundCheck.position, new Vector2(wallCheck.position.x * 2, 0.1f) * gameObject.transform.localScale, CapsuleDirection2D.Horizontal, 0, groundLayer);
     }
 
     private bool isWallTouch()
     {
-        return Physics2D.OverlapCapsule(wallCheck.position, new Vector2(0.1f, groundCheck.position.y * -2), CapsuleDirection2D.Vertical, 0, wallLayer);
+        return Physics2D.OverlapCapsule(wallCheck.position, new Vector2(0.1f, groundCheck.position.y * -2) * gameObject.transform.localScale, CapsuleDirection2D.Vertical, 0, wallLayer);
     }
 
     private void WallSlide()
