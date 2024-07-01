@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 6299115049280569705}
   - component: {fileID: 2977979833066622321}
   - component: {fileID: 5963496117403779047}
-  - component: {fileID: 5181116279194142022}
-  - component: {fileID: 7428726146536854225}
+  - component: {fileID: 3015435690088699905}
+  - component: {fileID: 2648800880026927050}
+  - component: {fileID: 2332744139904910325}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -130,8 +131,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 2977979833066622321}
-  standingCollider: {fileID: 5181116279194142022}
-  slidingCollider: {fileID: 7428726146536854225}
+  standingCollider: {fileID: 2648800880026927050}
+  slidingCollider: {fileID: 2332744139904910325}
   moveSpeed: 2
   maxMovementSpeed: 5
   jumpStrength: 6
@@ -145,11 +146,47 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   wallSlidingSpeed: 2
-  wallJumpingPower: {x: 6, y: 6}
+  wallJumpingPower: {x: 3, y: 6}
   slideSprite: {fileID: 21300000, guid: 52a2498b77e653e4792bce53610353bd, type: 3}
   standingSprite: {fileID: 21300000, guid: 601a38732645a684d9c574168da83e7a, type: 3}
   slideSlowdown: 0.99
---- !u!61 &5181116279194142022
+  slopeCheckDistance: 0.5
+--- !u!70 &3015435690088699905
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1432046258467513842}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 0.76, y: 1.45}
+  m_Direction: 0
+--- !u!61 &2648800880026927050
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -194,7 +231,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.76, y: 1.45}
   m_EdgeRadius: 0
---- !u!61 &7428726146536854225
+--- !u!61 &2332744139904910325
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
