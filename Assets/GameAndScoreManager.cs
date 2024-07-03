@@ -1,35 +1,63 @@
-using System.Collections;
+
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GameAndScoreManager : MonoBehaviour
 {
-    //public List<playerController> AlivePlayers;
+    /*
+    public PlayerController player1;
+    public PlayerController player2;
+    public PlayerController player3;
+    public PlayerController player4;
+
+    public List<PlayerController> AlivePlayers; 
+    public bool isAlive; 
     public int NumberOfWins = 0;
     public int AmountOfBoost = 0;
     public bool IsOutOfBounds = false;
-    public TextMesh Endscreen;
-    //public TextMesh 
+    public GameObject Endscreen;
+    public GameObject StartScreen;
+    public TextMesh MidMatchScoreDisplay;
+    AlivePlayers.Add(player1); 
+        AlivePlayers.Add(player2); 
+        AlivePlayers.Add(player3);
+        AlivePlayers.Add(player4); 
+    */
+
    
 
-
-
+  
     // Start is called before the first frame update
     void Start()
     {
-        
+       
     }
 
-    // Update is called once per frame
+
+    
     void Update()
     {
-        
-       // if(NumberOfWins == 3)
-            
-
-
-        //if()
-
-
+      
     }
+
+
+    /*
+
+    IsOutOfbounds()
+   {
+       for (int i = 0; i < AlivePlayers; i++)
+           if (AlivePlayers[i].position)
+               return true;
+           else
+               return false; 
+   }
+
+   bool HasThreeWins()
+   {
+       for (int i = 0; i < AlivePlayers; i++)
+           if (AlivePlayers.)
+   }
+
+   */
+
 }
