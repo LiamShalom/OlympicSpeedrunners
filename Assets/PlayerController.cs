@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
 {
     public Rigidbody2D rb;
     private BoxCollider2D bc;
+    private LineRenderer lr;
+    private DistanceJoint2D dj;
     private float xInput;
     private float slopeDownAngle;
     private float slopeDownAngleOld;
@@ -60,6 +62,9 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         bc = GetComponent<BoxCollider2D>();
+        dj = GetComponent<DistanceJoint2D>();
+        lr = GetComponent<LineRenderer>();
+        dj.enabled = false;
 
         capsuleSize = bc.size;
         currJumps = maxJumps;
@@ -143,9 +148,22 @@ public class PlayerController : MonoBehaviour
                 grappleDirection = (Vector2.left + Vector2.up) * 100;
             }
 
-            RaycastHit2D ray = Physics2D.Raycast(transform.position, grappleDirection, Mathf.Infinity);
-            Debug.DrawRay(transform.position, grappleDirection, Color.yellow);
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, grappleDirection, Mathf.Infinity, ceilingLayer);
+            //Debug.DrawRay(transform.position, grappleDirection, Color.yellow, 0.5f, false);
 
+            lr.SetPosition(0, hit.point);
+            lr.SetPosition(1, transform.position);
+            dj.connectedAnchor = hit.point;
+            dj.enabled = true;
+            lr.enabled = true;
+        }else if (Input.GetKeyUp(KeyCode.Z)){
+            dj.enabled=false;
+            lr.enabled=false;
+            currJumps = 1;
+        }
+        if (dj.enabled)
+        {
+            lr.SetPosition(1, transform.position);
         }
     }
 
@@ -185,8 +203,7 @@ public class PlayerController : MonoBehaviour
 
     private bool IsGrounded()
     {
-        isGrounded = Physics2D.OverlapCapsule(groundCheck.position, new Vector2(wallCheck.position.x * 2, 0.1f) * gameObject.transform.localScale, CapsuleDirection2D.Horizontal, 0, groundLayer);
-        return isGrounded;
+        return Physics2D.OverlapCapsule(groundCheck.position, new Vector2(wallCheck.position.x * 2, 0.1f) * gameObject.transform.localScale, CapsuleDirection2D.Horizontal, 0, groundLayer);
 
     }
 
@@ -256,7 +273,7 @@ public class PlayerController : MonoBehaviour
             wallChecker = wallCheck.position + Vector3.left * 0.1f;
 
         }
-        bool isTouchingWall = Physics2D.OverlapCapsule(wallChecker, new Vector2(0.2f, Math.Abs(groundCheck.position.y)) * gameObject.transform.localScale, CapsuleDirection2D.Vertical, 0, wallLayer);
+        bool isTouchingWall = Physics2D.OverlapCapsule(wallChecker, new Vector2(0.1f, Math.Abs(groundCheck.position.y) * 2) * gameObject.transform.localScale, CapsuleDirection2D.Vertical, 0, wallLayer);
 
 
         return isTouchingWall;
@@ -303,6 +320,7 @@ public class PlayerController : MonoBehaviour
                 transform.localScale = localScale;
             }
             Invoke(nameof(StopWallJumping), wallJumpingDuration);
+            currJumps = maxJumps;
         }
 
         
@@ -313,6 +331,13 @@ public class PlayerController : MonoBehaviour
         isWallJumping = false;
     }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.layer == wallLayer)
+        {
+            rb.velocity = new Vector2(0, rb.velocity.x);
+        }
+    }
     private void Flip()
     {
         if(isFacingRight && xInput < 0f || !isFacingRight && xInput > 0f)
