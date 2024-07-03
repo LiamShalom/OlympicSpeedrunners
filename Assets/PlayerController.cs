@@ -5,30 +5,32 @@ using System;
 using UnityEditor.Tilemaps;
 using TMPro;
 using Unity.VisualScripting;
+using Unity.Burst.CompilerServices;
 
 public class PlayerController : MonoBehaviour
 {
     public Rigidbody2D rb;
-    private CapsuleCollider2D cc;
-    public BoxCollider2D standingCollider;
-    public BoxCollider2D slidingCollider;
+    private BoxCollider2D bc;
     private float xInput;
     private float slopeDownAngle;
     private float slopeDownAngleOld;
-    public float moveSpeed = 5;
-    public float maxMovementSpeed = 5;
+    public float moveSpeed = 5f;
+    public float maxSpeed = 10f;
     Vector2 move;
     Vector2 newVelocity;
 
-    public float jumpStrength = 5;
+    public float jumpStrength = 10f;
     private bool isFacingRight = true;
-    public int numJumps = 1;
+    [SerializeField] private int maxJumps = 2;
+    public int currJumps;
 
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
 
     [SerializeField] private Transform wallCheck;
     [SerializeField] private LayerMask wallLayer;
+
+    [SerializeField] private LayerMask ceilingLayer;
     private bool isWallSliding;
     public float wallSlidingSpeed;
 
@@ -51,20 +53,23 @@ public class PlayerController : MonoBehaviour
     private bool onSlope;
     private float slopeSlideAngle;
 
+    public bool isGrounded;
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        cc = GetComponent<CapsuleCollider2D>();
+        bc = GetComponent<BoxCollider2D>();
 
-        capsuleSize = cc.size;
+        capsuleSize = bc.size;
+        currJumps = maxJumps;
     }
 
     // Update is called once per frame
     void Update()
     {
-        checkInput();
-        slopeCheck();
+        CheckInput();
+        SlopeCheck();
         WallSlide();
         WallJump();
         if (!isWallJumping)
@@ -76,81 +81,116 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        applyMovement();
+        ApplyMovement();
+        ClampVelocity();
+
     }
 
-    private void checkInput()
+    private void CheckInput()
     {
         xInput = Input.GetAxisRaw("Horizontal");
         move = new Vector2(xInput, 0);
-        if (isGrounded())
+
+        bool isGrounded = IsGrounded();
+
+        if (isGrounded)
         {
-            numJumps = 1;
-        }
-        if (Input.GetKeyDown(KeyCode.UpArrow) && numJumps > 0)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpStrength);
-            numJumps--;
+            currJumps = maxJumps;
         }
 
-        if (Input.GetKeyUp(KeyCode.UpArrow) && rb.velocity.y > 0f)
+        if (Input.GetKeyDown(KeyCode.UpArrow) && currJumps > 0)
         {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+            rb.velocity = new Vector2(rb.velocity.x, jumpStrength);
+        }
+
+        if (Input.GetKeyUp(KeyCode.UpArrow))
+        {
+            if (rb.velocity.y > 0f)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+            }
+            currJumps--;
         }
 
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             gameObject.GetComponent<SpriteRenderer>().sprite = slideSprite;
-            standingCollider.enabled = false;
-            cc.enabled = false;
-            slidingCollider.enabled = true;
-            gameObject.transform.position = new Vector2(transform.position.x, transform.position.y - (float)(slidingCollider.size.y / 2));
+            bc.size = new Vector2(bc.size.y, bc.size.x);
+            gameObject.transform.position = new Vector2(transform.position.x, transform.position.y - (float)(bc.size.y / 2));
             Flip();
-            if (isGrounded()) rb.velocity = new Vector2(rb.velocity.x * slideSlowdown, rb.velocity.y);
+            if (IsGrounded()) rb.velocity = new Vector2(rb.velocity.x * slideSlowdown, rb.velocity.y);
             isSliding = true;
         }
 
         if (Input.GetKeyUp(KeyCode.DownArrow))
         {
             gameObject.GetComponent<SpriteRenderer>().sprite = standingSprite;
-            slidingCollider.enabled = false;
-            standingCollider.enabled = true;
-            cc.enabled = true;
-            gameObject.transform.position = new Vector2(transform.position.x, transform.position.y + (float)(slidingCollider.size.y / 2));
+            bc.size = new Vector2(bc.size.y, bc.size.x);
+            gameObject.transform.position = new Vector2(transform.position.x, transform.position.y + (float)(bc.size.x / 2));
             Flip();
             isSliding = false;
         }
+
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            Vector3 grappleDirection;
+            if (isFacingRight)
+            {
+                grappleDirection = (Vector2.right + Vector2.up) * 100;
+            }
+            else
+            {
+                grappleDirection = (Vector2.left + Vector2.up) * 100;
+            }
+
+            RaycastHit2D ray = Physics2D.Raycast(transform.position, grappleDirection, Mathf.Infinity);
+            Debug.DrawRay(transform.position, grappleDirection, Color.yellow);
+
+        }
     }
 
-    private void applyMovement()
+    private void ApplyMovement()
     {
-        if (Math.Abs(rb.velocity.x) < maxMovementSpeed && !isSliding)
+        
+        if (Math.Abs(rb.velocity.x) < maxSpeed && !isSliding)
         {
-            if (isGrounded() && !onSlope)
+            if (IsGrounded())
             {
-                rb.AddForce(move * moveSpeed, ForceMode2D.Impulse);
+                if (!onSlope)
+                {
+                    rb.AddForce(move * moveSpeed, ForceMode2D.Impulse);
+                }
+                else
+                {
+                    Vector2 slopeMovementDirection = new Vector2(slopeNormalPerp.x * -xInput, slopeNormalPerp.y * -xInput).normalized;
+                    rb.AddForce(slopeMovementDirection * moveSpeed, ForceMode2D.Impulse);
+                }
             }
-            else if (isGrounded() && onSlope)
+            else
             {
-                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y);
-                move = new Vector2(slopeNormalPerp.x, slopeNormalPerp.y);
-                rb.AddForce(move * moveSpeed * -xInput, ForceMode2D.Impulse);
-            }
-            else if (!isGrounded())
-            {
-                rb.AddForce(move * moveSpeed/2, ForceMode2D.Impulse);
+                rb.AddForce(move * moveSpeed / 4, ForceMode2D.Impulse);
             }
         }
         
-    }
-        
 
-    private bool isGrounded()
+    }
+
+    void ClampVelocity()
     {
-        return Physics2D.OverlapCapsule(groundCheck.position, new Vector2(wallCheck.position.x * 2, 0.2f) * gameObject.transform.localScale, CapsuleDirection2D.Horizontal, 0, groundLayer);
+        float clampedX = Mathf.Clamp(rb.velocity.x, -maxSpeed, maxSpeed);
+        float clampedY = Mathf.Clamp(rb.velocity.y, -maxSpeed, maxSpeed);
+        rb.velocity = new Vector2(clampedX, clampedY);
     }
 
-    private void slopeCheck()
+
+    private bool IsGrounded()
+    {
+        isGrounded = Physics2D.OverlapCapsule(groundCheck.position, new Vector2(wallCheck.position.x * 2, 0.1f) * gameObject.transform.localScale, CapsuleDirection2D.Horizontal, 0, groundLayer);
+        return isGrounded;
+
+    }
+
+    private void SlopeCheck()
     {
         Vector2 checkPos;
         if (isFacingRight)
@@ -216,7 +256,7 @@ public class PlayerController : MonoBehaviour
             wallChecker = wallCheck.position + Vector3.left * 0.1f;
 
         }
-        bool isTouchingWall = Physics2D.OverlapCapsule(wallChecker, new Vector2(0.2f, Math.Abs(groundCheck.position.y) * 2) * gameObject.transform.localScale, CapsuleDirection2D.Vertical, 0, wallLayer);
+        bool isTouchingWall = Physics2D.OverlapCapsule(wallChecker, new Vector2(0.2f, Math.Abs(groundCheck.position.y)) * gameObject.transform.localScale, CapsuleDirection2D.Vertical, 0, wallLayer);
 
 
         return isTouchingWall;
@@ -224,7 +264,7 @@ public class PlayerController : MonoBehaviour
 
     private void WallSlide()
     {
-        if (isWallTouch() && !isGrounded())
+        if (isWallTouch() && !IsGrounded())
         {
             isWallSliding = true;
             rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed, float.MaxValue));
