@@ -57,7 +57,9 @@ public class PlayerController : MonoBehaviour
 
     public bool isGrounded;
 
+
     [SerializeField] private float grappleBoost;
+
 
     private State currState;
 
@@ -70,6 +72,14 @@ public class PlayerController : MonoBehaviour
         STATE_GRAPPLE
 
     };
+
+    //GameAndScoreManager Variables
+    public bool isAlive;
+    public int NumberOfWins = 0;
+    public int AmountOfBoost = 0;
+    public bool IsOutOfBounds = false;
+
+
 
     // Start is called before the first frame update
     void Start()
