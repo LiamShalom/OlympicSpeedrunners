@@ -834,7 +834,7 @@ Transform:
   m_GameObject: {fileID: 1824955448}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.466, y: -4.09, z: 0}
+  m_LocalPosition: {x: -14.12, y: -2.28, z: 0}
   m_LocalScale: {x: 2.3129354, y: -7.627744, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1028,6 +1028,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3026363514840559325, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
+      propertyPath: wallSlideSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 712e20daa72c42e45975cf70b796b91f, type: 3}
+    - target: {fileID: 3026363514840559325, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
+      propertyPath: slideMinVelocity
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 6015659376881592182, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
       propertyPath: m_Name
       value: Character
@@ -1072,7 +1080,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 828174320202720851, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
