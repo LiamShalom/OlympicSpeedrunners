@@ -33,14 +33,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask wallLayer;
 
     [SerializeField] private LayerMask ceilingLayer;
-    private bool isWallSliding;
     public float wallSlidingSpeed;
 
-    private bool isWallJumping = false;
     private float wallJumpDirection;
-    private float wallJumpingTime = 0.2f;
-    private float wallJumpingCounter;
-    private float wallJumpingDuration = 0.4f;
     public Vector2 wallJumpingPower = new Vector2(2f, 4f);
 
     public Sprite slideSprite;
