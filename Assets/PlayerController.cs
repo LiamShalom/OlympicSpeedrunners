@@ -10,14 +10,14 @@ using Unity.Burst.CompilerServices;
 public class PlayerController : MonoBehaviour
 {
     public Rigidbody2D rb;
-    private BoxCollider2D bc;
+    private CapsuleCollider2D cc;
     private LineRenderer lr;
     private DistanceJoint2D dj;
     private float xInput;
     private float slopeDownAngle;
     private float slopeDownAngleOld;
     public float moveSpeed = 5f;
-    public float maxSpeed = 10f;
+    public float maxSpeed = 20f;
     Vector2 move;
     Vector2 newVelocity;
 
@@ -57,16 +57,18 @@ public class PlayerController : MonoBehaviour
 
     public bool isGrounded;
 
+    [SerializeField] private float grappleBoost;
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        bc = GetComponent<BoxCollider2D>();
+        cc = GetComponent<CapsuleCollider2D>();
         dj = GetComponent<DistanceJoint2D>();
         lr = GetComponent<LineRenderer>();
         dj.enabled = false;
 
-        capsuleSize = bc.size;
+        capsuleSize = cc.size;
         currJumps = maxJumps;
     }
 
@@ -120,8 +122,9 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             gameObject.GetComponent<SpriteRenderer>().sprite = slideSprite;
-            bc.size = new Vector2(bc.size.y, bc.size.x);
-            gameObject.transform.position = new Vector2(transform.position.x, transform.position.y - (float)(bc.size.y / 2));
+            cc.size = new Vector2(cc.size.y, cc.size.x);
+            cc.direction = CapsuleDirection2D.Horizontal;
+            gameObject.transform.position = new Vector2(transform.position.x, transform.position.y - (float)(cc.size.y / 2));
             Flip();
             if (IsGrounded()) rb.velocity = new Vector2(rb.velocity.x * slideSlowdown, rb.velocity.y);
             isSliding = true;
@@ -130,8 +133,9 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.DownArrow))
         {
             gameObject.GetComponent<SpriteRenderer>().sprite = standingSprite;
-            bc.size = new Vector2(bc.size.y, bc.size.x);
-            gameObject.transform.position = new Vector2(transform.position.x, transform.position.y + (float)(bc.size.x / 2));
+            cc.size = new Vector2(cc.size.y, cc.size.x);
+            cc.direction = CapsuleDirection2D.Vertical;
+            gameObject.transform.position = new Vector2(transform.position.x, transform.position.y + (float)(cc.size.x / 2));
             Flip();
             isSliding = false;
         }
@@ -156,7 +160,9 @@ public class PlayerController : MonoBehaviour
             dj.connectedAnchor = hit.point;
             dj.enabled = true;
             lr.enabled = true;
-        }else if (Input.GetKeyUp(KeyCode.Z)){
+            rb.velocity = new Vector2(maxSpeed, rb.velocity.y) * grappleBoost;
+        }
+        else if (Input.GetKeyUp(KeyCode.Z)){
             dj.enabled=false;
             lr.enabled=false;
             currJumps = 1;
@@ -318,6 +324,7 @@ public class PlayerController : MonoBehaviour
                 Vector3 localScale = transform.localScale;
                 localScale.x *= -1f;
                 transform.localScale = localScale;
+                grappleBoost *= -1;
             }
             Invoke(nameof(StopWallJumping), wallJumpingDuration);
             currJumps = maxJumps;
@@ -331,9 +338,9 @@ public class PlayerController : MonoBehaviour
         isWallJumping = false;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.gameObject.layer == wallLayer)
+        if (collision.gameObject.layer == wallLayer)
         {
             rb.velocity = new Vector2(0, rb.velocity.x);
         }
@@ -346,6 +353,7 @@ public class PlayerController : MonoBehaviour
             Vector3 localScale = transform.localScale;
             localScale.x *= -1f;
             transform.localScale = localScale;
+            grappleBoost *= -1;
         }
     }
 
