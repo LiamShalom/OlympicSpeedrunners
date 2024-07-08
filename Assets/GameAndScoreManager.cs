@@ -23,21 +23,21 @@ public class GameAndScoreManager : MonoBehaviour
     }
 
 
-    
+
     void Update()
     {
         borders = gameObject.GetComponent<BoxCollider2D>();
-        OnTriggerEnter2D(borders);
+        //OnTriggerEnter2D(borders);
 
-        
 
 
     }
+}
 
 
     /*
      * Border logic and midgame logic
-     */
+     *
 
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -78,3 +78,4 @@ public class GameAndScoreManager : MonoBehaviour
 
 
 }
+    */
