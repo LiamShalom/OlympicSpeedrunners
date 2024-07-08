@@ -57,7 +57,16 @@ public class PlayerController : MonoBehaviour
 
     public bool isGrounded;
 
+<<<<<<< Updated upstream
     [SerializeField] private float grappleBoost;
+=======
+    //GameAndScoreManager Variables
+    public bool isAlive;
+    public int NumberOfWins = 0;
+    public int AmountOfBoost = 0;
+    public bool IsOutOfBounds = false;
+
+>>>>>>> Stashed changes
 
     // Start is called before the first frame update
     void Start()
