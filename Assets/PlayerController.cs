@@ -6,6 +6,7 @@ using UnityEditor.Tilemaps;
 using TMPro;
 using Unity.VisualScripting;
 using Unity.Burst.CompilerServices;
+using System.Runtime.CompilerServices;
 
 public class PlayerController : MonoBehaviour
 {
@@ -40,6 +41,7 @@ public class PlayerController : MonoBehaviour
 
     public Sprite slideSprite;
     public Sprite standingSprite;
+    public Sprite wallSlideSprite;
     public float slideSlowdown;
     private bool isSliding;
 
@@ -50,34 +52,36 @@ public class PlayerController : MonoBehaviour
     private bool onSlope;
     private float slopeSlideAngle;
 
+    [SerializeField] private float slideMinVelocity;
+
     public bool isGrounded;
-
-    //GameAndScoreManager Variables
-    public bool isAlive = true;
-    public int NumberOfWins = 0;
-    public int AmountOfBoost = 0;
-
-    // Animator
-    public Animator animator; 
-
-    
-
 
 
     [SerializeField] private float grappleBoost;
 
+    private float totalVelocity;
+    [SerializeField] private Vector2 wallBoost;
+    [SerializeField] private float fallOffWall;
+    Vector3 grappleDirection;
+    [SerializeField] private float safeDistanceAboveGround;
 
-    private State currState;
+    [SerializeField] private State currState;
 
-    enum State{
+    enum State
+    {
         STATE_STANDING,
-        STATE_RUNNING,
         STATE_JUMPING,
         STATE_SLIDING,
         STATE_WALLSLIDING,
         STATE_GRAPPLE
 
     };
+
+    //GameAndScoreManager Variables
+    public bool isAlive = true;
+    public int NumberOfWins = 0;
+    public int AmountOfBoost = 0;
+    public bool IsOutOfBounds = false;
 
 
 
@@ -97,44 +101,37 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //CheckInput();
         checkStateMachine();
-        SlopeCheck();
-        //WallSlide();
-        //WallJump();
+
         if (currState != State.STATE_WALLSLIDING)
         {
             Flip();
         }
 
-        //Animator variables
-        
-        animator.SetBool("isRunning", currState == State.STATE_RUNNING);
-
-
     }
+
 
     private void FixedUpdate()
     {
-        ApplyMovement();
+        if (currState == State.STATE_STANDING) ApplyMovement();
 
         ClampVelocity();
 
     }
 
+
     private void checkStateMachine()
     {
         xInput = Input.GetAxisRaw("Horizontal");
         move = new Vector2(xInput, 0);
+        totalVelocity = Math.Abs(rb.velocity.x) + Math.Abs(rb.velocity.y);
         bool isOnGround = IsGrounded();
         bool isOnWall = isWallTouch();
-        if (dj.enabled)
-        {
-            lr.SetPosition(1, transform.position);
-        }
+        if (!isOnWall) wallBoost = new Vector2(0f, 100f + rb.velocity.y);
+        RaycastHit2D grapplePoint;
+
         switch (currState)
         {
-            case State.STATE_RUNNING:
             case State.STATE_STANDING:
                 currJumps = maxJumps;
                 if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -146,60 +143,88 @@ public class PlayerController : MonoBehaviour
                     WallSlide();
                     break;
                 }
-                if (Input.GetKeyDown(KeyCode.DownArrow))
+                if (Input.GetKey(KeyCode.DownArrow) && totalVelocity >= slideMinVelocity)
                 {
                     slide();
                 }
                 if (Input.GetKeyDown(KeyCode.Z))
                 {
-                    grapple();
+                    grapplePoint = grapple();
                 }
                 break;
 
             case State.STATE_JUMPING:
                 if (isOnGround)
                 {
-                    currState = State.STATE_STANDING;
+                    backtoStanding();
                     break;
                 }
                 if (isOnWall)
                 {
-                    currState = State.STATE_WALLSLIDING;
+                    WallSlide();
                     break;
                 }
                 if (Input.GetKeyUp(KeyCode.UpArrow))
                 {
                     fall();
                 }
-                if (Input.GetKeyDown(KeyCode.DownArrow))
+                if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    jump();
+                }
+                if (Input.GetKey(KeyCode.DownArrow) && totalVelocity >= slideMinVelocity)
                 {
                     slide();
                 }
                 if (Input.GetKeyDown(KeyCode.Z))
                 {
-                    grapple();
+                    grapplePoint = grapple();
                 }
                 break;
 
             case State.STATE_SLIDING:
-                if (Input.GetKeyUp(KeyCode.DownArrow))
+                if (!Input.GetKey(KeyCode.DownArrow))
                 {
-                    stopSliding();
+                    backtoStanding();
+                    gameObject.transform.position += new Vector3(0, capsuleSize.x / 2, 0);
                 }
                 break;
 
             case State.STATE_WALLSLIDING:
-                if (Input.GetKeyDown(KeyCode.DownArrow))
+                if (isOnGround && rb.velocity.y < 0)
                 {
-                    slide();
+                    stopWallSliding();
+                    backtoStanding();
+                    rb.AddForce(new Vector2(moveSpeed * transform.localScale.x * fallOffWall, 0), ForceMode2D.Impulse);
+                    break;
+                }
+                if (!isOnWall)
+                {
+                    backtoStanding();
+                    rb.velocity = new Vector2(rb.velocity.x, 0);
+                    break;
                 }
                 if (Input.GetKeyDown(KeyCode.UpArrow))
                 {
                     jump();
                 }
+                if (Input.GetKeyDown(KeyCode.Z))
+                {
+                    grapplePoint = grapple();
+                }
                 break;
 
             case State.STATE_GRAPPLE:
+                if (isOnGround)
+                {
+                    stopGrappling();
+                }
+                if (isOnWall)
+                {
+                    stopGrappling();
+                    WallSlide();
+
+                }
                 if (!Input.GetKey(KeyCode.Z))
                 {
                     stopGrappling();
@@ -208,6 +233,10 @@ public class PlayerController : MonoBehaviour
 
             default:
                 break;
+        }
+        if (dj.enabled)
+        {
+            lr.SetPosition(1, transform.position);
         }
     }
 
@@ -225,7 +254,7 @@ public class PlayerController : MonoBehaviour
                 rb.velocity = new Vector2(rb.velocity.x, jumpStrength);
             }
         }
-        
+
     }
 
     private void fall()
@@ -236,155 +265,74 @@ public class PlayerController : MonoBehaviour
         }
         currJumps--;
     }
-    
+
     private void slide()
     {
         currState = State.STATE_SLIDING;
         gameObject.GetComponent<SpriteRenderer>().sprite = slideSprite;
-        cc.size = new Vector2(cc.size.y, cc.size.x);
+        cc.size = new Vector2(capsuleSize.y, capsuleSize.x);
         cc.direction = CapsuleDirection2D.Horizontal;
-        gameObject.transform.position = new Vector2(transform.position.x, transform.position.y - (float)(cc.size.y / 2));
-        Flip();
+        gameObject.transform.position -= new Vector3(0, capsuleSize.y / 2, 0);
         if (IsGrounded()) rb.velocity = new Vector2(rb.velocity.x * slideSlowdown, rb.velocity.y);
-        isSliding = true;
     }
 
-    private void stopSliding()
+    private void backtoStanding()
     {
         currState = State.STATE_STANDING;
         gameObject.GetComponent<SpriteRenderer>().sprite = standingSprite;
-        cc.size = new Vector2(cc.size.y, cc.size.x);
+        cc.size = new Vector2(capsuleSize.x, capsuleSize.y);
         cc.direction = CapsuleDirection2D.Vertical;
-        gameObject.transform.position = new Vector2(transform.position.x, transform.position.y + (float)(cc.size.x / 2));
-        Flip();
-        isSliding = false;
     }
 
-    private void grapple()
+    private void stopWallSliding()
+    {
+        isFacingRight = !isFacingRight;
+        Vector3 localScale = transform.localScale;
+        localScale.x *= -1f;
+        transform.localScale = localScale;
+        gameObject.transform.position += new Vector3(capsuleSize.x / 4, 0, 0) * transform.localScale.x;
+        rb.AddForce(new Vector2(fallOffWall, 0) * localScale.x, ForceMode2D.Impulse);
+    }
+
+    private RaycastHit2D grapple()
     {
         currState = State.STATE_GRAPPLE;
-        Vector3 grappleDirection;
-            if (isFacingRight)
-            {
-                grappleDirection = (Vector2.right + Vector2.up) * 100;
-            }
-            else
-            {
-                grappleDirection = (Vector2.left + Vector2.up) * 100;
-            }
+        if (isFacingRight)
+        {
+            grappleDirection = Vector2.right + Vector2.up;
+        }
+        else
+        {
+            grappleDirection = Vector2.left + Vector2.up;
+        }
 
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, grappleDirection, Mathf.Infinity, ceilingLayer);
-            //Debug.DrawRay(transform.position, grappleDirection, Color.yellow, 0.5f, false);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, grappleDirection, Mathf.Infinity, ceilingLayer);
+        //Debug.DrawRay(transform.position, grappleDirection, Color.yellow, 0.5f, false);
 
-            lr.SetPosition(0, hit.point);
-            lr.SetPosition(1, transform.position);
-            dj.connectedAnchor = hit.point;
-            dj.enabled = true;
-            lr.enabled = true;
-            rb.velocity = new Vector2(maxSpeed, rb.velocity.y) * grappleBoost;
-
-
+        lr.SetPosition(0, hit.point);
+        lr.SetPosition(1, transform.position);
+        dj.connectedAnchor = hit.point;
+        dj.enabled = true;
+        lr.enabled = true;
+        //rb.velocity = new Vector2(maxSpeed, rb.velocity.y) * grappleBoost * transform.localScale.x;
+        return hit;
     }
 
     private void stopGrappling()
     {
+        currState = State.STATE_JUMPING;
         dj.enabled = false;
         lr.enabled = false;
         currJumps = 1;
-        if (IsGrounded())
-        {
-            currState = State.STATE_STANDING;
-        }
-        else
-        {
-            currState = State.STATE_JUMPING;
-        }
-    }
-
-
-    private void CheckInput()
-    {
-        xInput = Input.GetAxisRaw("Horizontal");
-        move = new Vector2(xInput, 0);
-
-        bool isGrounded = IsGrounded();
-
-        if (isGrounded)
-        {
-            currJumps = maxJumps;
-        }
-
-        if (Input.GetKeyDown(KeyCode.UpArrow) && currJumps > 0)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpStrength);
-        }
-
-        if (Input.GetKeyUp(KeyCode.UpArrow))
-        {
-            if (rb.velocity.y > 0f)
-            {
-                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-            }
-            currJumps--;
-        }
-
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            gameObject.GetComponent<SpriteRenderer>().sprite = slideSprite;
-            cc.size = new Vector2(cc.size.y, cc.size.x);
-            cc.direction = CapsuleDirection2D.Horizontal;
-            gameObject.transform.position = new Vector2(transform.position.x, transform.position.y - (float)(cc.size.y / 2));
-            Flip();
-            if (IsGrounded()) rb.velocity = new Vector2(rb.velocity.x * slideSlowdown, rb.velocity.y);
-            isSliding = true;
-        }
-
-        if (Input.GetKeyUp(KeyCode.DownArrow))
-        {
-            gameObject.GetComponent<SpriteRenderer>().sprite = standingSprite;
-            cc.size = new Vector2(cc.size.y, cc.size.x);
-            cc.direction = CapsuleDirection2D.Vertical;
-            gameObject.transform.position = new Vector2(transform.position.x, transform.position.y + (float)(cc.size.x / 2));
-            Flip();
-            isSliding = false;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            Vector3 grappleDirection;
-            if (isFacingRight)
-            {
-                grappleDirection = (Vector2.right + Vector2.up) * 100;
-            }
-            else
-            {
-                grappleDirection = (Vector2.left + Vector2.up) * 100;
-            }
-
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, grappleDirection, Mathf.Infinity, ceilingLayer);
-            //Debug.DrawRay(transform.position, grappleDirection, Color.yellow, 0.5f, false);
-
-            lr.SetPosition(0, hit.point);
-            lr.SetPosition(1, transform.position);
-            dj.connectedAnchor = hit.point;
-            dj.enabled = true;
-            lr.enabled = true;
-            rb.velocity = new Vector2(maxSpeed, rb.velocity.y) * grappleBoost;
-        }
-        if (dj.enabled)
-        {
-            lr.SetPosition(1, transform.position);
-        }
     }
 
     private void ApplyMovement()
     {
-        
-        if (Math.Abs(rb.velocity.x) < maxSpeed && !isSliding)
+
+        if (Math.Abs(rb.velocity.x) < maxSpeed)
         {
             if (IsGrounded())
             {
-                currState = State.STATE_RUNNING;
                 if (!onSlope)
                 {
                     rb.AddForce(move * moveSpeed, ForceMode2D.Impulse);
@@ -397,11 +345,10 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                currState = State.STATE_JUMPING;
                 rb.AddForce(move * moveSpeed / 4, ForceMode2D.Impulse);
             }
         }
-        
+
 
     }
 
@@ -415,7 +362,7 @@ public class PlayerController : MonoBehaviour
 
     private bool IsGrounded()
     {
-        return Physics2D.OverlapCapsule(groundCheck.position, new Vector2(wallCheck.position.x * 2, 0.1f) * gameObject.transform.localScale, CapsuleDirection2D.Horizontal, 0, groundLayer);
+        return Physics2D.OverlapCapsule(groundCheck.position, new Vector2(cc.size.x, 0.1f) * gameObject.transform.localScale, CapsuleDirection2D.Horizontal, 0, groundLayer);
 
     }
 
@@ -424,7 +371,7 @@ public class PlayerController : MonoBehaviour
         Vector2 checkPos;
         if (isFacingRight)
         {
-            checkPos = transform.position - new Vector3(-capsuleSize.x /2, capsuleSize.y / 2);
+            checkPos = transform.position - new Vector3(-capsuleSize.x / 2, capsuleSize.y / 2);
         }
         else
         {
@@ -444,7 +391,9 @@ public class PlayerController : MonoBehaviour
             onSlope = true;
             slopeSlideAngle = Vector2.Angle(slopeHitFront.normal, Vector2.up);
 
-        }else if (slopeHitBack){
+        }
+        else if (slopeHitBack)
+        {
             onSlope = true;
             slopeSlideAngle = Vector2.Angle(slopeHitBack.normal, Vector2.up);
         }
@@ -462,7 +411,7 @@ public class PlayerController : MonoBehaviour
         {
             slopeNormalPerp = Vector2.Perpendicular(hit.normal).normalized;
             slopeDownAngle = Vector2.Angle(hit.normal, Vector2.up);
-            if(slopeDownAngle != slopeDownAngleOld)
+            if (slopeDownAngle != slopeDownAngleOld)
             {
                 onSlope = true;
             }
@@ -473,35 +422,20 @@ public class PlayerController : MonoBehaviour
     }
 
     private bool isWallTouch()
-<<<<<<< Updated upstream
-    { 
+    {
         return Physics2D.OverlapCapsule(wallCheck.position, new Vector2(0.1f, cc.size.y) * gameObject.transform.localScale, CapsuleDirection2D.Vertical, 0, wallLayer);
 
-=======
-    {
-        Vector2 wallChecker;
-        if (isFacingRight)
-        {
-            wallChecker = wallCheck.position + Vector3.right * 0.1f;
-
-        }
-        else
-        {
-            wallChecker = wallCheck.position + Vector3.left * 0.1f;
-
-        }
-        bool isTouchingWall = Physics2D.OverlapCapsule(wallChecker, new Vector2(0.1f, Math.Abs(groundCheck.position.y) * 2) * gameObject.transform.localScale, CapsuleDirection2D.Vertical, 0, wallLayer);
-
-
-        return isTouchingWall;
->>>>>>> Stashed changes
     }
 
     private void WallSlide()
     {
-        if (isWallTouch() && !IsGrounded())
+        if (isWallTouch())
         {
             currState = State.STATE_WALLSLIDING;
+            gameObject.GetComponent<SpriteRenderer>().sprite = wallSlideSprite;
+            cc.size = new Vector2(capsuleSize.x / 2, capsuleSize.y);
+            gameObject.transform.position += new Vector3(capsuleSize.x / 4, 0, 0) * transform.localScale.x;
+            if (rb.velocity.y >= 0) rb.AddForce(wallBoost, ForceMode2D.Impulse);
             rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed, float.MaxValue));
         }
     }
@@ -510,6 +444,8 @@ public class PlayerController : MonoBehaviour
     {
         currState = State.STATE_JUMPING;
         wallJumpDirection = -transform.localScale.x;
+        gameObject.GetComponent<SpriteRenderer>().sprite = standingSprite;
+        cc.size = new Vector2(capsuleSize.x, capsuleSize.y);
         rb.velocity = new Vector2(wallJumpDirection * wallJumpingPower.x, wallJumpingPower.y);
 
         if (transform.localScale.x != wallJumpDirection)
@@ -518,29 +454,20 @@ public class PlayerController : MonoBehaviour
             Vector3 localScale = transform.localScale;
             localScale.x *= -1f;
             transform.localScale = localScale;
-            grappleBoost *= -1;
         }
         currJumps = maxJumps;
 
 
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.layer == wallLayer)
-        {
-            rb.velocity = new Vector2(0, rb.velocity.x);
-        }
-    }
     private void Flip()
     {
-        if(isFacingRight && xInput < 0f || !isFacingRight && xInput > 0f)
+        if (isFacingRight && xInput < 0f || !isFacingRight && xInput > 0f)
         {
             isFacingRight = !isFacingRight;
             Vector3 localScale = transform.localScale;
             localScale.x *= -1f;
             transform.localScale = localScale;
-            grappleBoost *= -1;
         }
     }
 
