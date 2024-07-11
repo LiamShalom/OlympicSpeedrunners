@@ -10,7 +10,7 @@ public class MenuManager : MonoBehaviour
     public GameObject MainMenu;
     public GameObject SettingMenu;
 
-    private bool GameIsPaused;
+    
 
     //the purpose of knowing where the origin of the setting menu is from is so that you are able to
     // return to the correct screen when pressing esc
@@ -63,7 +63,7 @@ public class MenuManager : MonoBehaviour
 
         PauseMenu.SetActive(false);
         Time.timeScale = 1f;
-        GameIsPaused = false; 
+        
         
     }
 
@@ -95,7 +95,7 @@ public class MenuManager : MonoBehaviour
     {
         AllMenusOff();
         Time.timeScale = 1f;
-        GameIsPaused = false; 
+         
     }
 
 
@@ -125,7 +125,7 @@ public class MenuManager : MonoBehaviour
         MainMenu.SetActive(true);
         Time.timeScale = 0f;
         MainMenuShown = true;
-        GameIsPaused = false;
+        
 
     } 
     
@@ -136,7 +136,7 @@ public class MenuManager : MonoBehaviour
         PauseMenu.SetActive(true);
         Time.timeScale = 0f;
         PauseMenuShown = true;
-        GameIsPaused = false;
+        
     }
 
     
