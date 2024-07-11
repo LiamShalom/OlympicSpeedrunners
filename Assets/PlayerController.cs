@@ -415,8 +415,9 @@ public class PlayerController : MonoBehaviour
     }
 
     private bool isWallTouch()
-    {
+    { 
         return Physics2D.OverlapCapsule(wallCheck.position, new Vector2(0.1f, cc.size.y) * gameObject.transform.localScale, CapsuleDirection2D.Vertical, 0, wallLayer);
+
     }
 
     private void WallSlide()
