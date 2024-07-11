@@ -209,10 +209,12 @@ public class PlayerController : MonoBehaviour
                 {
                     grapplePoint = grapple();
                 }
-
-
                 break;
             case State.STATE_GRAPPLE:
+                if (isOnGround)
+                {
+                    stopGrappling();
+                }
                 if (isOnWall)
                 {
                     stopGrappling();

@@ -43,7 +43,6 @@ GameObject:
   - component: {fileID: 7745600134818021766}
   - component: {fileID: 1045473728700621277}
   - component: {fileID: 3026363514840559325}
-  - component: {fileID: 828174320202720851}
   - component: {fileID: 509125951964336584}
   - component: {fileID: 5084011139939791672}
   - component: {fileID: 1087135229436894592}
@@ -183,55 +182,20 @@ MonoBehaviour:
   wallJumpingPower: {x: 6, y: 8}
   slideSprite: {fileID: 21300000, guid: 52a2498b77e653e4792bce53610353bd, type: 3}
   standingSprite: {fileID: 21300000, guid: 601a38732645a684d9c574168da83e7a, type: 3}
+  wallSlideSprite: {fileID: 21300000, guid: 712e20daa72c42e45975cf70b796b91f, type: 3}
   slideSlowdown: 0.99
   slopeCheckDistance: 0.5
+  slideMinVelocity: 5
   isGrounded: 0
   grappleBoost: 2
---- !u!61 &828174320202720851
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6015659376881592182}
-  m_Enabled: 0
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.76, y: 1.45}
-    newSize: {x: 0.76, y: 1.45}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 0.76, y: 1.45}
-  m_EdgeRadius: 0
+  wallBoost: {x: 0, y: 0}
+  fallOffWall: 6
+  safeDistanceAboveGround: 0.5
+  currState: 0
+  isAlive: 1
+  NumberOfWins: 0
+  AmountOfBoost: 0
+  IsOutOfBounds: 0
 --- !u!232 &509125951964336584
 DistanceJoint2D:
   m_ObjectHideFlags: 0
@@ -241,7 +205,7 @@ DistanceJoint2D:
   m_GameObject: {fileID: 6015659376881592182}
   m_Enabled: 1
   serializedVersion: 4
-  m_EnableCollision: 0
+  m_EnableCollision: 1
   m_ConnectedRigidBody: {fileID: 0}
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
