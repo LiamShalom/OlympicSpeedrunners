@@ -180,6 +180,7 @@ public class PlayerController : MonoBehaviour
                     grapplePoint = grapple();
                 }
                 break;
+
             case State.STATE_SLIDING:
                 if (!Input.GetKey(KeyCode.DownArrow))
                 {
@@ -187,6 +188,7 @@ public class PlayerController : MonoBehaviour
                     gameObject.transform.position += new Vector3(0, capsuleSize.x / 2, 0);
                 }
                 break;
+
             case State.STATE_WALLSLIDING:
                 if (isOnGround && rb.velocity.y < 0)
                 {
@@ -210,6 +212,7 @@ public class PlayerController : MonoBehaviour
                     grapplePoint = grapple();
                 }
                 break;
+
             case State.STATE_GRAPPLE:
                 if (isOnGround)
                 {
@@ -226,6 +229,7 @@ public class PlayerController : MonoBehaviour
                     stopGrappling();
                 }
                 break;
+
             default:
                 break;
         }
