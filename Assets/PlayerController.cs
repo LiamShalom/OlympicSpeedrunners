@@ -7,6 +7,7 @@ using TMPro;
 using Unity.VisualScripting;
 using Unity.Burst.CompilerServices;
 using System.Runtime.CompilerServices;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -26,6 +27,8 @@ public class PlayerController : MonoBehaviour
     private bool isFacingRight = true;
     [SerializeField] private int maxJumps = 2;
     public int currJumps;
+    public float jumpStartTime;
+    private float jumpTime;
 
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
@@ -63,9 +66,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector2 wallBoost;
     [SerializeField] private float fallOffWall;
     Vector3 grappleDirection;
-    [SerializeField] private float safeDistanceAboveGround;
+    Vector2 grapplePoint;
+    [SerializeField] private float shortenDistance;
 
     [SerializeField] private State currState;
+
+    public PhysicsMaterial2D slidingMaterial;
 
     enum State
     {
@@ -127,16 +133,21 @@ public class PlayerController : MonoBehaviour
         totalVelocity = Math.Abs(rb.velocity.x) + Math.Abs(rb.velocity.y);
         bool isOnGround = IsGrounded();
         bool isOnWall = isWallTouch();
-        if (!isOnWall) wallBoost = new Vector2(0f, 100f + rb.velocity.y);
-        RaycastHit2D grapplePoint;
+        if (!isOnWall) wallBoost = new Vector2(0f, 200f + rb.velocity.y);
+        if (isOnGround) currJumps = maxJumps;
 
         switch (currState)
         {
             case State.STATE_STANDING:
-                currJumps = maxJumps;
+                if (!isOnGround)
+                {
+                    currState = State.STATE_JUMPING;
+                    break;
+                }
                 if (Input.GetKeyDown(KeyCode.UpArrow))
                 {
                     jump();
+                    Debug.Log("Current State is: " + currState);
                 }
                 if (isOnWall)
                 {
@@ -147,21 +158,18 @@ public class PlayerController : MonoBehaviour
                 {
                     slide();
                 }
-                if (Input.GetKeyDown(KeyCode.Z))
-                {
-                    grapplePoint = grapple();
-                }
                 break;
 
             case State.STATE_JUMPING:
-                if (isOnGround)
-                {
-                    backtoStanding();
-                    break;
-                }
+                
                 if (isOnWall)
                 {
                     WallSlide();
+                    break;
+                }
+                if (isOnGround)
+                {
+                    backtoStanding();
                     break;
                 }
                 if (Input.GetKeyUp(KeyCode.UpArrow))
@@ -178,7 +186,7 @@ public class PlayerController : MonoBehaviour
                 }
                 if (Input.GetKeyDown(KeyCode.Z))
                 {
-                    grapplePoint = grapple();
+                    grapple();
                 }
                 break;
 
@@ -201,7 +209,6 @@ public class PlayerController : MonoBehaviour
                 if (!isOnWall)
                 {
                     backtoStanding();
-                    rb.velocity = new Vector2(rb.velocity.x, 0);
                     break;
                 }
                 if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -210,14 +217,24 @@ public class PlayerController : MonoBehaviour
                 }
                 if (Input.GetKeyDown(KeyCode.Z))
                 {
-                    grapplePoint = grapple();
+                    grapple();
                 }
                 break;
 
             case State.STATE_GRAPPLE:
-                if (isOnGround)
+                if (IsGrounded())
                 {
                     stopGrappling();
+                    backtoStanding();
+                    //float dist = (transform.position.x - dj.connectedAnchor.x) / (transform.position.y - dj.connectedAnchor.y);
+                    //float grappleAngle = Mathf.Atan(dist);
+                    //float grappleLength = dj.distance * Mathf.Cos(grappleAngle);
+                    //Debug.Log("Angle Between Objects: " + grappleAngle);
+                    //Debug.Log("Distance Between Objects: " + grappleLength);
+                    //StartCoroutine(ShortenGrapple(grappleLength));
+                    //rb.velocity = new Vector2(maxSpeed * transform.localScale.x, 0);
+                    
+
                 }
                 if (isOnWall)
                 {
@@ -242,6 +259,7 @@ public class PlayerController : MonoBehaviour
 
     private void jump()
     {
+        currState = State.STATE_JUMPING;
         if (isWallTouch())
         {
             WallJump();
@@ -250,7 +268,6 @@ public class PlayerController : MonoBehaviour
         {
             if (currJumps > 0)
             {
-                currState = State.STATE_JUMPING;
                 rb.velocity = new Vector2(rb.velocity.x, jumpStrength);
             }
         }
@@ -259,9 +276,10 @@ public class PlayerController : MonoBehaviour
 
     private void fall()
     {
-        if (rb.velocity.y > 0f)
+        if(rb.velocity.y > 0)
         {
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+            Debug.Log("Falling");
         }
         currJumps--;
     }
@@ -294,7 +312,7 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(new Vector2(fallOffWall, 0) * localScale.x, ForceMode2D.Impulse);
     }
 
-    private RaycastHit2D grapple()
+    private void grapple()
     {
         currState = State.STATE_GRAPPLE;
         if (isFacingRight)
@@ -309,18 +327,33 @@ public class PlayerController : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(transform.position, grappleDirection, Mathf.Infinity, ceilingLayer);
         //Debug.DrawRay(transform.position, grappleDirection, Color.yellow, 0.5f, false);
 
-        lr.SetPosition(0, hit.point);
-        lr.SetPosition(1, transform.position);
-        dj.connectedAnchor = hit.point;
-        dj.enabled = true;
-        lr.enabled = true;
-        //rb.velocity = new Vector2(maxSpeed, rb.velocity.y) * grappleBoost * transform.localScale.x;
-        return hit;
+        if(hit.collider != null)
+        {
+            dj.connectedAnchor = hit.point;
+            dj.enabled = true;
+            lr.SetPosition(0, hit.point);
+            lr.SetPosition(1, transform.position);
+            lr.enabled = true;
+        }
+
+
+        rb.velocity = new Vector2(maxSpeed * transform.localScale.x , rb.velocity.y);
+    }
+
+    private IEnumerator ShortenGrapple(float distance)
+    {
+        while (dj.distance > distance)
+        {
+            dj.distance -= shortenDistance;
+            yield return new WaitForSeconds(.0001f);
+        }
+        yield return null;
     }
 
     private void stopGrappling()
     {
         currState = State.STATE_JUMPING;
+        cc.enabled = true;
         dj.enabled = false;
         lr.enabled = false;
         currJumps = 1;

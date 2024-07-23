@@ -138,7 +138,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 1
-  m_Material: {fileID: 6200000, guid: 8a24215c9525f104dae374a9042a863e, type: 2}
+  m_Material: {fileID: 6200000, guid: 810c8677b39251744a4c459143d6fc92, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -190,7 +190,7 @@ MonoBehaviour:
   grappleBoost: 2
   wallBoost: {x: 0, y: 0}
   fallOffWall: 6
-  safeDistanceAboveGround: 0.5
+  shortenDistance: 0
   currState: 0
   isAlive: 1
   NumberOfWins: 0
