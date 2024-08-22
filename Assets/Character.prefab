@@ -62,7 +62,7 @@ Transform:
   m_GameObject: {fileID: 6015659376881592182}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 2.43, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -137,7 +137,7 @@ Rigidbody2D:
   m_Mass: 10
   m_LinearDrag: 0
   m_AngularDrag: 0
-  m_GravityScale: 1
+  m_GravityScale: 2
   m_Material: {fileID: 6200000, guid: 810c8677b39251744a4c459143d6fc92, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
@@ -162,11 +162,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 1045473728700621277}
-  moveSpeed: 5
-  maxSpeed: 10
-  jumpStrength: 8
+  tm: {fileID: 0}
+  moveSpeed: 6
+  speed: 0
+  maxSpeed: 12
+  acceleration: 10
+  deceleration: 10
+  jumpStrength: 12
   maxJumps: 2
   currJumps: 0
+  jumpStartTime: 0
   groundCheck: {fileID: 1098026940486663205}
   groundLayer:
     serializedVersion: 2
@@ -179,7 +184,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   wallSlidingSpeed: 2
-  wallJumpingPower: {x: 6, y: 8}
+  wallJumpingPower: {x: 8, y: 10}
   slideSprite: {fileID: 21300000, guid: 52a2498b77e653e4792bce53610353bd, type: 3}
   standingSprite: {fileID: 21300000, guid: 601a38732645a684d9c574168da83e7a, type: 3}
   wallSlideSprite: {fileID: 21300000, guid: 712e20daa72c42e45975cf70b796b91f, type: 3}
@@ -187,11 +192,13 @@ MonoBehaviour:
   slopeCheckDistance: 0.5
   slideMinVelocity: 5
   isGrounded: 0
-  grappleBoost: 2
+  grappleBoost: 10
   wallBoost: {x: 0, y: 0}
   fallOffWall: 6
-  shortenDistance: 0
+  shortenDistance: 0.001
   currState: 0
+  slidingMaterial: {fileID: 6200000, guid: 59a63f15a87d2dc4e966128cd3fe8f19, type: 2}
+  groundTile: {fileID: 0}
   isAlive: 1
   NumberOfWins: 0
   AmountOfBoost: 0
@@ -214,7 +221,7 @@ DistanceJoint2D:
   m_Anchor: {x: 0, y: 0}
   m_ConnectedAnchor: {x: 0, y: 0}
   m_AutoConfigureDistance: 1
-  m_Distance: 0.005
+  m_Distance: 2.43
   m_MaxDistanceOnly: 0
 --- !u!120 &5084011139939791672
 LineRenderer:

@@ -1158,50 +1158,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 509125951964336584, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
-      propertyPath: m_Distance
-      value: 2.43
-      objectReference: {fileID: 0}
-    - target: {fileID: 1045473728700621277, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
-      propertyPath: m_Interpolate
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1045473728700621277, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
-      propertyPath: m_GravityScale
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3026363514840559325, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
-      propertyPath: maxSpeed
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 3026363514840559325, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
-      propertyPath: moveSpeed
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 3026363514840559325, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
-      propertyPath: grappleBoost
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 3026363514840559325, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
-      propertyPath: jumpStrength
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 3026363514840559325, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
-      propertyPath: shortenDistance
-      value: 0.001
-      objectReference: {fileID: 0}
-    - target: {fileID: 3026363514840559325, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
-      propertyPath: slidingMaterial
-      value: 
-      objectReference: {fileID: 6200000, guid: 59a63f15a87d2dc4e966128cd3fe8f19, type: 2}
-    - target: {fileID: 3026363514840559325, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
-      propertyPath: wallJumpingPower.x
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 3026363514840559325, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
-      propertyPath: wallJumpingPower.y
-      value: 10
-      objectReference: {fileID: 0}
     - target: {fileID: 6015659376881592182, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
       propertyPath: m_Name
       value: Character
