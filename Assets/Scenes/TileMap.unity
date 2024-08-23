@@ -2705,7 +2705,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.2264151, g: 0.2264151, b: 0.2264151, a: 0}
+  m_BackGroundColor: {r: 0.14017442, g: 0.5075506, b: 0.8490566, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -4960,6 +4960,51 @@ PrefabInstance:
       propertyPath: m_RenderMode
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 719630069184608323, guid: 14de6148489324b5c8481f6a8b0aa8af, type: 3}
+      propertyPath: m_text
+      value: "Controls: \nUpArrow  - Jump \nDownArrow - Slide \nLeft Arrown - Move
+        Left \nRight Arrow - Move Right \nGrapple - Space Bar\n"
+      objectReference: {fileID: 0}
+    - target: {fileID: 2714773208619928165, guid: 14de6148489324b5c8481f6a8b0aa8af, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2714773208619928165, guid: 14de6148489324b5c8481f6a8b0aa8af, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 226
+      objectReference: {fileID: 0}
+    - target: {fileID: 3395006712754975991, guid: 14de6148489324b5c8481f6a8b0aa8af, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3395006712754975991, guid: 14de6148489324b5c8481f6a8b0aa8af, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -177
+      objectReference: {fileID: 0}
+    - target: {fileID: 4243262070180423557, guid: 14de6148489324b5c8481f6a8b0aa8af, type: 3}
+      propertyPath: m_text
+      value: OLYMPIC TRIALS
+      objectReference: {fileID: 0}
+    - target: {fileID: 4243262070180423557, guid: 14de6148489324b5c8481f6a8b0aa8af, type: 3}
+      propertyPath: m_fontSize
+      value: 120
+      objectReference: {fileID: 0}
+    - target: {fileID: 4243262070180423557, guid: 14de6148489324b5c8481f6a8b0aa8af, type: 3}
+      propertyPath: m_margin.z
+      value: 2.242813
+      objectReference: {fileID: 0}
+    - target: {fileID: 4243262070180423557, guid: 14de6148489324b5c8481f6a8b0aa8af, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 120
+      objectReference: {fileID: 0}
+    - target: {fileID: 4754316050283787518, guid: 14de6148489324b5c8481f6a8b0aa8af, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5325367251196773860, guid: 14de6148489324b5c8481f6a8b0aa8af, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5525364851861281769, guid: 14de6148489324b5c8481f6a8b0aa8af, type: 3}
       propertyPath: m_Name
       value: AllMenus
@@ -5048,8 +5093,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7539405283507267758, guid: 14de6148489324b5c8481f6a8b0aa8af, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 12
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 4752013413027724068, guid: 14de6148489324b5c8481f6a8b0aa8af, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 14de6148489324b5c8481f6a8b0aa8af, type: 3}
@@ -5090,8 +5140,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.00076267973, y: 0.03459184}
-  m_Size: {x: 0.4579702, y: 0.9844568}
+  m_Offset: {x: 0.00076267973, y: 0.085975766}
+  m_Size: {x: 0.4579702, y: 0.88168895}
   m_Direction: 0
 --- !u!95 &1842455677
 Animator:
@@ -5308,7 +5358,7 @@ PrefabInstance:
       objectReference: {fileID: 21300000, guid: 11f60825ee6414d1995f404d27baf1b0, type: 3}
     - target: {fileID: 7745600134818021766, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
       propertyPath: m_SortingOrder
-      value: 0
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 7745600134818021766, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
       propertyPath: m_WasSpriteAssigned
