@@ -1,3 +1,4 @@
+using OlympicSpeedrunners;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,6 +20,7 @@ public class PlayerController : MonoBehaviour
     private LineRenderer lr;
     private DistanceJoint2D dj;
     public Tilemap tm;
+    public GhostRunner ghost;
     public float xInput;
     private float slopeDownAngle;
     private float slopeDownAngleOld;
@@ -93,6 +95,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float obstacleRespawnTime;
 
     public TileBase obstacle;
+
+    private Logic logic;
 
     enum State
     {
@@ -628,6 +632,22 @@ public class PlayerController : MonoBehaviour
 
         //Debug.Log("Restoring tile at position: " + tilePosition);
         tm.SetTile(tilePosition, obstacle);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision != null)
+        {
+            ghost.FinishLineCrossed(false);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision != null)
+        {
+            ghost.FinishLineCrossed(true);
+        }
     }
 }
 
