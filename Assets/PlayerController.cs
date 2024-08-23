@@ -112,6 +112,11 @@ public class PlayerController : MonoBehaviour
     public int AmountOfBoost = 0;
     public bool IsOutOfBounds = false;
 
+    public Animator animator;
+    public float horizontalMovementVelocity = 0f;
+
+
+
 
 
     // Start is called before the first frame update
@@ -131,6 +136,35 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     public void Update()
     {
+
+        //animator code
+
+        animator.SetFloat("Speed", Math.Abs(rb.velocity.x));
+        animator.SetFloat("FallingSpeed", rb.velocity.y);
+        
+        if (currState == State.STATE_WALLSLIDING)
+        {
+            animator.SetBool("isWallClinging", true);
+        }
+        else
+            animator.SetBool("isWallClinging", false);
+
+        if (currState == State.STATE_SLIDING)
+        {
+            animator.SetBool("isCrouching", true);
+        }else
+            animator.SetBool("isCrouching", false);
+
+        if (currState == State.STATE_JUMPING)
+        {
+            animator.SetBool("isJumping", true);
+        }
+        else
+            animator.SetBool("isJumping", false);
+
+
+
+
         checkStateMachine();
         SlopeCheck();
 
@@ -200,6 +234,7 @@ public class PlayerController : MonoBehaviour
                 if (Input.GetKeyDown(JumpKey))
                 {
                     jump();
+          
                 }
                 if (isOnWall)
                 {
@@ -327,6 +362,7 @@ public class PlayerController : MonoBehaviour
 
     public void jump()
     {
+        
         currState = State.STATE_JUMPING;
         if (isWallTouch())
         {
@@ -336,6 +372,7 @@ public class PlayerController : MonoBehaviour
         {
             if (currJumps > 0)
             {
+                
                 rb.velocity = new Vector2(rb.velocity.x, jumpStrength);
             }
         }
