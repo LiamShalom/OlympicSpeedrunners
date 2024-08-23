@@ -6202,6 +6202,40 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6851732226344257981, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
   m_PrefabInstance: {fileID: 1857998932}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1843662588 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6015659376881592182, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
+  m_PrefabInstance: {fileID: 1857998932}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1843662595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843662588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d06a6e5afe976aa4ea4369539a201375, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputRecord: []
+  recordInterval: 0.001
+--- !u!114 &1843662596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1843662588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a368c31b54f7b9d418a26fa1c3e3e1e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  recorder: {fileID: 1843662595}
+  playerController: {fileID: 0}
+  inputRecord: []
 --- !u!1 &1848654477
 GameObject:
   m_ObjectHideFlags: 0
@@ -6306,6 +6340,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1379454079}
     - target: {fileID: 3026363514840559325, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
+      propertyPath: slideSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 374dcbd67950bab4ca5ecca0a109cfa3, type: 3}
+    - target: {fileID: 3026363514840559325, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
       propertyPath: acceleration
       value: 100
       objectReference: {fileID: 0}
@@ -6329,6 +6367,14 @@ PrefabInstance:
       propertyPath: slideSlowdown
       value: 0.99
       objectReference: {fileID: 0}
+    - target: {fileID: 3026363514840559325, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
+      propertyPath: standingSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 69a07f1b8d9ad1c40b9ae6463aa44800, type: 3}
+    - target: {fileID: 3026363514840559325, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
+      propertyPath: wallSlideSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: e7001a277bbc8434a8663ec035aef031, type: 3}
     - target: {fileID: 3026363514840559325, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
       propertyPath: layermask.m_Bits
       value: 128
@@ -6397,10 +6443,24 @@ PrefabInstance:
       propertyPath: m_FlipX
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7745600134818021766, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 69a07f1b8d9ad1c40b9ae6463aa44800, type: 3}
+    - target: {fileID: 7745600134818021766, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6015659376881592182, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1843662596}
+    - targetCorrespondingSourceObject: {fileID: 6015659376881592182, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1843662595}
   m_SourcePrefab: {fileID: 100100000, guid: 9a0f54902ba202a4895a3ab786f845e0, type: 3}
 --- !u!1 &2059387788
 GameObject:

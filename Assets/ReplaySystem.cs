@@ -31,7 +31,7 @@ namespace OlympicSpeedrunners {
         #region Recording
 
         private readonly Dictionary<RecordingType, Recording> _runs = new Dictionary<RecordingType, Recording>();
-        private Recording _currentRun;
+        public Recording _currentRun;
         private float _elapsedRecordingTime;
         private int _snapshotEveryNFrames;
         private int _frameCount;

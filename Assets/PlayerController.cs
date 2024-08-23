@@ -1,3 +1,4 @@
+using OlympicSpeedrunners;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,6 +20,7 @@ public class PlayerController : MonoBehaviour
     private LineRenderer lr;
     private DistanceJoint2D dj;
     public Tilemap tm;
+    public GhostRunner ghost;
     public float xInput;
     private float slopeDownAngle;
     private float slopeDownAngleOld;
@@ -32,11 +34,9 @@ public class PlayerController : MonoBehaviour
     public float acceleration = 10f;
     public float deceleration = 10f;
 
-    private KeyCode LeftKey = KeyCode.LeftArrow;
-    private KeyCode RightKey = KeyCode.RightArrow;
     private KeyCode JumpKey = KeyCode.UpArrow;
     private KeyCode SlideKey = KeyCode.DownArrow;
-    private KeyCode GrappleKey = KeyCode.Z;
+    private KeyCode GrappleKey = KeyCode.Space;
 
     public float jumpStrength = 10f;
     public bool isFacingRight = true;
@@ -93,6 +93,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float obstacleRespawnTime;
 
     public TileBase obstacle;
+
+    private Logic logic;
 
     enum State
     {
@@ -229,7 +231,7 @@ public class PlayerController : MonoBehaviour
                     currState = State.STATE_JUMPING;
                     break;
                 }
-                if (Input.GetKeyDown(KeyCode.UpArrow))
+                if (Input.GetKeyDown(JumpKey))
                 {
                     jump();
           
@@ -665,6 +667,22 @@ public class PlayerController : MonoBehaviour
 
         //Debug.Log("Restoring tile at position: " + tilePosition);
         tm.SetTile(tilePosition, obstacle);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision != null)
+        {
+            ghost.FinishLineCrossed(false);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision != null)
+        {
+            ghost.FinishLineCrossed(true);
+        }
     }
 }
 
