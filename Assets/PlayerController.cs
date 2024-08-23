@@ -34,11 +34,9 @@ public class PlayerController : MonoBehaviour
     public float acceleration = 10f;
     public float deceleration = 10f;
 
-    private KeyCode LeftKey = KeyCode.LeftArrow;
-    private KeyCode RightKey = KeyCode.RightArrow;
     private KeyCode JumpKey = KeyCode.UpArrow;
     private KeyCode SlideKey = KeyCode.DownArrow;
-    private KeyCode GrappleKey = KeyCode.Z;
+    private KeyCode GrappleKey = KeyCode.Space;
 
     public float jumpStrength = 10f;
     public bool isFacingRight = true;
@@ -199,7 +197,7 @@ public class PlayerController : MonoBehaviour
                     currState = State.STATE_JUMPING;
                     break;
                 }
-                if (Input.GetKeyDown(KeyCode.UpArrow))
+                if (Input.GetKeyDown(JumpKey))
                 {
                     jump();
                 }

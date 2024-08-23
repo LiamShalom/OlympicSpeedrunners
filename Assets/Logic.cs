@@ -11,7 +11,7 @@ namespace OlympicSpeedrunners
         public Text BestTime;
         public Text LastTime;
         public Text CurrTime;
-        private float currTime = 00.00f;
+        public float currTime = 00.00f;
         private float lastTime = 00.00f;
         private float bestTime = 00.00f;
         // Start is called before the first frame update
